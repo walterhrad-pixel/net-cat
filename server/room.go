@@ -80,3 +80,7 @@ func (r *Room) Run() {
 func (r *Room) AddClient(c *Client) {
 	r.Register <- c
 }
+
+func (r *Room) RemoveClient(c *Client) {
+	r.Unregister <- c
+}
