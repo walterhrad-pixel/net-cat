@@ -76,3 +76,7 @@ func (r *Room) Run() {
 		}
 	}
 }
+
+func (r *Room) AddClient(c *Client) {
+	r.Register <- c
+}
