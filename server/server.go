@@ -46,3 +46,8 @@ func handleConnection(conn net.conn, hub *Hub) {
 		conn.Write([]byte("Invalid name\n"))
 		return
 	}
+	client := NewClient(conn, username, hub)
+
+	room := hub.GetOrCreateRoom("main")
+
+	room.AddClient(client)
