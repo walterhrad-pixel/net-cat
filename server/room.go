@@ -2,6 +2,7 @@ package server
 
 import (
 	"sync"
+	"time"
 )
 
 type Room struct {
@@ -24,6 +25,7 @@ func NewRoom(name string) *Room {
 		History:    []Message{},
 	}
 }
+
 func (r *Room) Run() {
 	for {
 		select {
@@ -53,3 +55,24 @@ func (r *Room) Run() {
 			leaveMsg := NewMessage(LeaveMessage, client.Username, "", r.Name)
 			leaveMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 			r.BroadcastMessage(leaveMsg)
+
+		case msg := <-r.Broadcast:
+			r.mu.Lock()
+
+			r.History = append(r.History, msg)
+
+			for client := range r.Clients {
+				if client != msg.Sender {
+					select {
+					case client.Send <- []byte(msg.String() + "\n"):
+					default:
+						close(client.Send)
+						delete(r.Clients, client)
+					}
+				}
+			}
+
+			r.mu.Unlock()
+		}
+	}
+}
