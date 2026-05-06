@@ -41,3 +41,11 @@ func (r *Room) Run() {
 			joinMsg := NewMessage(JoinMessage, client.Username, "", r.Name)
 			joinMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 			r.BroadcastMessage(joinMsg)
+
+		case client := <-r.Unregister:
+			r.mu.Lock()
+			if _, ok := r.Clients[client]; ok {
+				delete(r.Clients, client)
+				close(client.Send)
+			}
+			r.mu.Unlock()
