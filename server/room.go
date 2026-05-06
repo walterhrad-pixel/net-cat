@@ -37,3 +37,7 @@ func (r *Room) Run() {
 			}
 
 			r.mu.Unlock
+
+			joinMsg := NewMessage(JoinMessage, client.Username, "", r.Name)
+			joinMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+			r.BroadcastMessage(joinMsg)
