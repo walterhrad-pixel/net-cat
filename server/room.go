@@ -38,7 +38,7 @@ func (r *Room) Run() {
 				client.Send <- []byte(msg.String() + "\n")
 			}
 
-			r.mu.Unlock
+			r.mu.Unlock()
 
 			joinMsg := NewMessage(JoinMessage, client.Username, "", r.Name)
 			joinMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
@@ -83,4 +83,8 @@ func (r *Room) AddClient(c *Client) {
 
 func (r *Room) RemoveClient(c *Client) {
 	r.Unregister <- c
+}
+
+func (r *Room) BroadcastMessage(msg Message) {
+	r.Broadcast <- msg
 }
