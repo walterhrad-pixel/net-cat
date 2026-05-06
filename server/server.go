@@ -28,3 +28,21 @@ func StartServer(port string) {
 		}
 		go handleConnection(conn, hub)
 	}
+}
+func handleConnection(conn net.conn, hub *Hub) {
+	defer conn.Close()
+
+	conn.Write([]byte("Welcome to TCP-chat!\n"))
+	conn.Write([]byte("[ENTER YOUR NAME]: "))
+
+	scanner := bufio.NewScanner(conn)
+
+	if !scanner.Scan() {
+		return
+	}
+	username := strings.TrimSpace(scanner.Text())
+
+	if username == "" {
+		conn.Write([]byte("Invalid name\n"))
+		return
+	}
