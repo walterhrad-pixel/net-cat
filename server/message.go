@@ -18,12 +18,12 @@ const (
 
 //Message represents a chat message 
 type Message struct {
-	Type      MessageType  `json: "type"`
-	Username  string       `json: "username"`
-	Content   string       `json: "content"`
-	Room      string       `json: "room"`
-	Timestamp string       `json: "timestamp"`
-	Sender    *Client      `json: "-"`
+	Type      MessageType  `json:"type"`
+	Username  string       `json:"username"`
+	Content   string       `json:"content"`
+	Room      string       `json:"room"`
+	Timestamp string       `json:"timestamp"`
+	Sender    *Client      `json:"-"`
 }
 
 //NewMessage creates a new message
@@ -44,7 +44,7 @@ func (m Message) String() string {
 	case SystemMessage:
 		return fmt.Sprintf("[%s][SYSTEM]: %s", m.Timestamp, m.Content)
 	case JoinMessage:
-		retern fmt.Sprintf("[%s][SYSTEM]: %s has joined the room", m.Timestamp, m.Username)
+		return fmt.Sprintf("[%s][SYSTEM]: %s has joined the room", m.Timestamp, m.Username)
 	case LeaveMessage:
 		return fmt.Sprintf("[%s][SYSTEM]: %s has left the room", m.Timestamp, m.Username)
 	default:
