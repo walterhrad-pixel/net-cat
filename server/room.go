@@ -49,3 +49,7 @@ func (r *Room) Run() {
 				close(client.Send)
 			}
 			r.mu.Unlock()
+
+			leaveMsg := NewMessage(LeaveMessage, client.Username, "", r.Name)
+			leaveMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+			r.BroadcastMessage(leaveMsg)
