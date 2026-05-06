@@ -17,3 +17,14 @@ func StartServer(port string) {
 		return
 	}
 	defer listener.close()
+
+	fmt.Println("Listening on the port :" + port)
+	hub := NewHub()
+
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			continue
+		}
+		go handleConnection(conn, hub)
+	}
