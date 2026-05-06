@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 )
+
 func StartServer(port string) {
 	if port == "" {
 		port = "8989"
@@ -13,7 +14,7 @@ func StartServer(port string) {
 
 	listener, err := net.Listen("tcp", ";"+port)
 	if err != nil {
-		fmt.Println("Error starting server:", err) 
+		fmt.Println("Error starting server:", err)
 		return
 	}
 	defer listener.close()
@@ -29,6 +30,7 @@ func StartServer(port string) {
 		go handleConnection(conn, hub)
 	}
 }
+
 func handleConnection(conn net.conn, hub *Hub) {
 	defer conn.Close()
 
@@ -51,3 +53,11 @@ func handleConnection(conn net.conn, hub *Hub) {
 	room := hub.GetOrCreateRoom("main")
 
 	room.AddClient(client)
+
+	go client.Write()
+	go client.Read()
+
+	<-client.Quit
+
+	room.RemoveClient(client)
+}
