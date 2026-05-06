@@ -23,4 +23,17 @@ func NewRoom(name string) *Room {
 		Unregister: make(chan *Client),
 		History:    []Message{},
 	}
+}
+func (r *Room) Run() {
+	for {
+		select {
+		case client := <-r.Register:
+			r.mu.Lock()
+			r.Clients[client] = true
+			client.Room = r
 
+			for _, msg := range r.History {
+				client.Send <- []byte(msg.String() + "\n")
+			}
+
+			r.mu.Unlock
