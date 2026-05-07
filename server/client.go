@@ -20,7 +20,7 @@ type Client struct {
 //NewClient creates a new client
 func NewClient(conn net.Conn, username string, hub *Hub) *Client {
 	return &Client{
-		conn:     conn,
+		Conn:     conn,
 		Username: strings.TrimSpace(username),
 		Hub:     hub,
 		Send:     make(chan []byte, 256),
@@ -28,7 +28,7 @@ func NewClient(conn net.Conn, username string, hub *Hub) *Client {
 	}
 }
 
-//Read reads messages from client connection
+//Read reads messages from client connectionSSSS
 func (c *Client) Read() {
 	defer func() {
 		c.Quit <- struct{}{}
@@ -49,7 +49,7 @@ func (c *Client) Read() {
 
 		//Regular chat message 
 		msg := NewMessage(ChatMessage, c.Username, text, c.Room.Name)
-		msg := Timestamp = time.Now().Format("2006-01-02 15:04:05")
+		msg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 		msg.Sender = c 
 		c.Room.BroadcastMessage(msg) 
 	}
