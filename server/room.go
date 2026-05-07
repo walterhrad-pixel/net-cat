@@ -35,7 +35,7 @@ func (r *Room) Run() {
 			client.Room = r
 
 			for _, msg := range r.History {
-				client.Send <- []byte(msg.String() + "\n")
+				client.Send <- FormatMessage(msg)
 			}
 
 			r.mu.Unlock()
@@ -64,7 +64,7 @@ func (r *Room) Run() {
 			for client := range r.Clients {
 				if client != msg.Sender {
 					select {
-					case client.Send <- []byte(msg.String() + "\n"):
+					case client.Send <- FormatMessage(msg)
 					default:
 						close(client.Send)
 						delete(r.Clients, client)
