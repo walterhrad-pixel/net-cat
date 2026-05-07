@@ -29,6 +29,24 @@ func TestRoomCount(t *testing.T) {
 	}
 }
 
+func TestMoveClient(t *testing.T) {
+	hub := server.NewHub()
+
+	client := &server.Client{
+		Send: make(chan []byte, 1),
+	}
+
+	hub.MoveClient(client, "room1")
+
+	if client.Room == nil {
+		t.Error("client should be assigned to a room")
+	}
+
+	if client.Room.Name != "room1" {
+		t.Errorf("expected room1, got %s", client.Room.Name)
+	}
+}
+
 func TestMoveClientSwitchRoom(t *testing.T) {
 	hub := server.NewHub()
 
