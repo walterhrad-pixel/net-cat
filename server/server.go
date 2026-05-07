@@ -12,14 +12,14 @@ func StartServer(port string) {
 		port = "8989"
 	}
 
-	listener, err := net.Listen("tcp", ";"+port)
+	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 		return
 	}
-	defer listener.close()
+	defer listener.Close()
 
-	fmt.Println("Listening on the port :" + port)
+	fmt.Println("Listening on port:" + port)
 	hub := NewHub()
 
 	for {
@@ -31,7 +31,7 @@ func StartServer(port string) {
 	}
 }
 
-func handleConnection(conn net.conn, hub *Hub) {
+func handleConnection(conn net.Conn, hub *Hub) {
 	defer conn.Close()
 
 	conn.Write([]byte("Welcome to TCP-chat!\n"))
