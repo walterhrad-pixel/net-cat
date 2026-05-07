@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -82,5 +83,23 @@ func TestAddRemoveAndBroadcast(t *testing.T) {
 		}
 	case <-time.After(500 * time.Millisecond):
 		t.Fatal("timed out waiting for leave notice")
+	}
+}
+
+func TestRoomCapacity(t *testing.T) {
+	r := NewRoom("cap")
+
+	// fill room up to capacity
+	for i := 0; i < maxClientsPerRoom; i++ {
+		c := &Client{Username: fmt.Sprintf("u%d", i), Send: make(chan []byte, 1)}
+		if !r.AddClient(c) {
+			t.Fatalf("expected add to succeed for index %d", i)
+		}
+	}
+
+	// next add should fail
+	extra := &Client{Username: "extra", Send: make(chan []byte, 1)}
+	if r.AddClient(extra) {
+		t.Fatal("expected add to fail when room is at capacity")
 	}
 }
