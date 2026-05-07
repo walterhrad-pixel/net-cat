@@ -30,19 +30,27 @@ func NewRoom(name string) *Room {
 // AddClient adds a client to the room
 func (r *Room) AddClient(client *Client) bool {
 	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	if len(r.Clients) >= maxClientsPerRoom {
+		r.mu.Unlock()
 		return false
 	}
 
 	r.Clients[client] = true
 	client.Room = r
 
+	// snapshot clients to avoid holding lock while sending
+	clients := make([]*Client, 0, len(r.Clients))
+	for c := range r.Clients {
+		clients = append(clients, c)
+	}
+	r.mu.Unlock()
+
 	// Send join message to others (including sender for confirmation)
 	joinMsg := NewMessage(JoinMessage, client.Username, "", r.Name)
 	joinMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
-	r.Broadcast <- joinMsg
+	for _, c := range clients {
+		c.SendMessage(joinMsg)
+	}
 
 	// Send history to new client
 	r.sendHistory(client)
@@ -54,12 +62,20 @@ func (r *Room) AddClient(client *Client) bool {
 func (r *Room) RemoveClient(client *Client) {
 	r.mu.Lock()
 	delete(r.Clients, client)
+
+	// snapshot remaining clients
+	clients := make([]*Client, 0, len(r.Clients))
+	for c := range r.Clients {
+		clients = append(clients, c)
+	}
 	r.mu.Unlock()
 
-	// Send leave message
+	// Send leave message to remaining clients
 	leaveMsg := NewMessage(LeaveMessage, client.Username, "", r.Name)
 	leaveMsg.Timestamp = time.Now().Format("2006-01-02 15:04:05")
-	r.Broadcast <- leaveMsg
+	for _, c := range clients {
+		c.SendMessage(leaveMsg)
+	}
 }
 
 // BroadcastMessage sends a message to all clients in the room
