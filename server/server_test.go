@@ -16,3 +16,15 @@ func TestGetOrCreateRoom(t *testing.T) {
 		t.Error("expected same room instance, got different ones")
 	}
 }
+
+func TestRoomCount(t *testing.T) {
+	hub := server.NewHub()
+
+	hub.GetOrCreateRoom("roomA")
+	hub.GetOrCreateRoom("roomB")
+	hub.GetOrCreateRoom("roomC")
+
+	if hub.RoomCount() != 3 {
+		t.Errorf("expected 3 rooms, got %d", hub.RoomCount())
+	}
+}
