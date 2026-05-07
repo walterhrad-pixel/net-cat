@@ -28,3 +28,24 @@ func TestRoomCount(t *testing.T) {
 		t.Errorf("expected 3 rooms, got %d", hub.RoomCount())
 	}
 }
+
+func TestMoveClientSwitchRoom(t *testing.T) {
+	hub := server.NewHub()
+
+	client := &server.Client{
+		Send: make(chan []byte, 1),
+	}
+
+	hub.MoveClient(client, "room1")
+	firstRoom := client.Room
+
+	hub.MoveClient(client, "room2")
+
+	if client.Room.Name != "room2" {
+		t.Error("client did not move to new room")
+	}
+
+	if firstRoom.Name == client.Room.Name {
+		t.Error("client should have switched rooms")
+	}
+}
