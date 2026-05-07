@@ -103,3 +103,16 @@ func TestRoomCapacity(t *testing.T) {
 		t.Fatal("expected add to fail when room is at capacity")
 	}
 }
+
+func contains(s, sub string) bool {
+	return len(s) >= len(sub) && (s == sub || (len(sub) > 0 && (indexOf(s, sub) >= 0)))
+}
+
+func indexOf(s, substr string) int {
+	for i := 0; i+len(substr) <= len(s); i++ {
+		if s[i:i+len(substr)] == substr {
+			return i
+		}
+	}
+	return -1
+}
