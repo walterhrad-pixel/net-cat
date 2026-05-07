@@ -64,7 +64,7 @@ func (r *Room) Run() {
 			for client := range r.Clients {
 				if client != msg.Sender {
 					select {
-					case client.Send <- FormatMessage(msg)
+					case client.Send <- FormatMessage(msg):
 					default:
 						close(client.Send)
 						delete(r.Clients, client)
